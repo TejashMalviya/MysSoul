@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Soul - Your Guide</title>
+    <title>My Soul- Your Guide</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -59,76 +59,21 @@
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
         .page { animation: fadeIn 0.5s ease-out; }
         .user-message, .ai-response { animation: fadeIn 0.5s ease-out; }
         
-        /* Journal Page Specifics */
-        #journal-page { position: relative; overflow: hidden; }
-        #journal-video-bg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: translate(-50%, -50%);
-            z-index: 0;
-            opacity: 0.15;
-        }
-        .journal-content { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column;}
-        
         /* Quill Editor Styling */
-        #journal-editor { height: calc(100% - 150px); color: #fff; }
+        #journal-editor { height: calc(100% - 100px); color: #fff; }
         .ql-toolbar { border-radius: 0.5rem 0.5rem 0 0; border: 1px solid rgba(255, 255, 255, 0.2) !important; }
         .ql-container { border-radius: 0 0 0.5rem 0.5rem; border: 1px solid rgba(255, 255, 255, 0.2) !important; font-size: 16px; }
         .ql-editor { color: #E0E0E0; }
         .ql-snow .ql-stroke { stroke: #c084fc; }
         .ql-snow .ql-picker-label { color: #c084fc !important; }
         .ql-snow .ql-active .ql-stroke { stroke: #fff; }
-
-        /* Gamification Styles */
-        @keyframes flow-in {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .gamification-widget { animation: flow-in 0.6s ease-out forwards; }
-        .badge {
-            transition: all 0.3s ease;
-            filter: grayscale(80%);
-            opacity: 0.6;
-        }
-        .badge.unlocked {
-            filter: grayscale(0%);
-            opacity: 1;
-            transform: scale(1.05);
-        }
-        
-        /* New "Breathing Orb" Loading Animation */
-        .breathing-orb-loader {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 60px;
-        }
-        .breathing-orb {
-            width: 25px;
-            height: 25px;
-            background: #e879f9;
-            border-radius: 50%;
-            animation: breathe 2.5s infinite ease-in-out;
-            box-shadow: 0 0 15px #e879f9, 0 0 30px #e879f9, 0 0 50px #c084fc;
-        }
-        @keyframes breathe {
-            0%, 100% {
-                transform: scale(0.8);
-                box-shadow: 0 0 10px #e879f9, 0 0 20px #e879f9, 0 0 30px #c084fc;
-            }
-            50% {
-                transform: scale(1.1);
-                box-shadow: 0 0 20px #f0abfc, 0 0 40px #f0abfc, 0 0 60px #e879f9;
-            }
-        }
-
     </style>
 </head>
 <body class="bg-gray-900">
@@ -139,16 +84,12 @@
         <div class="w-full max-w-5xl h-[95vh] flex flex-col glass-effect rounded-2xl shadow-2xl overflow-hidden">
             <!-- Header with Navigation -->
             <header class="p-4 border-b border-gray-700/50 flex justify-between items-center flex-shrink-0">
-                <h1 class="text-2xl font-bold text-purple-300">My Soul</h1>
+                <h1 class="text-xl font-bold text-purple-300">Jnana</h1>
                 <nav class="flex items-center space-x-6 text-lg">
-                    <button class="nav-btn active" data-page="guide" data-lang-key="nav_guide">Guide</button>
-                    <button class="nav-btn" data-page="journal" data-lang-key="nav_journal">Journal</button>
-                    <button class="nav-btn" data-page="history" data-lang-key="nav_memories">Memories</button>
+                    <button class="nav-btn active" data-page="guide">Guide</button>
+                    <button class="nav-btn" data-page="journal">Journal</button>
+                    <button class="nav-btn" data-page="history">Memories</button>
                 </nav>
-                 <div class="flex items-center space-x-2">
-                    <button id="lang-en" class="px-2 py-1 text-sm rounded-md bg-purple-600/50">EN</button>
-                    <button id="lang-hi" class="px-2 py-1 text-sm rounded-md bg-transparent">HI</button>
-                </div>
             </header>
 
             <!-- Page Container -->
@@ -158,19 +99,16 @@
                 <div id="guide-page" class="page">
                     <main id="chat-container" class="h-[calc(95vh-240px)] overflow-y-auto custom-scrollbar pr-4">
                         <div class="ai-response p-4 rounded-lg bg-black/20">
-                           <p data-lang-key="welcome_message">Hey! What's on your mind? Lay it on me. I'm here to listen.</p>
+                           <p>Hey! What's on your mind? Lay it on me. I'm here to listen.</p>
                         </div>
                     </main>
-                    <div id="loading-indicator" class="hidden py-4 flex flex-col justify-center items-center">
-                         <div class="breathing-orb-loader">
-                            <div class="breathing-orb"></div>
-                         </div>
-                         <p id="loading-text" class="text-purple-300 text-sm mt-4"></p>
+                    <div id="loading-indicator" class="hidden py-4 flex justify-center items-center">
+                         <p class="text-purple-300 animate-pulse text-sm">Thinking...</p>
                     </div>
                     <footer class="mt-4">
                         <div class="flex items-center space-x-4">
-                            <textarea id="user-input" class="flex-1 p-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 resize-none" rows="1" data-lang-key="placeholder_prompt" placeholder="Just type what you're feeling..."></textarea>
-                            <button id="send-button" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300" data-lang-key="send_button">
+                            <textarea id="user-input" class="flex-1 p-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 resize-none" rows="1" placeholder="Just type what you're feeling..."></textarea>
+                            <button id="send-button" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300">
                                 Send
                             </button>
                         </div>
@@ -179,44 +117,26 @@
 
                 <!-- Journaling Page -->
                 <div id="journal-page" class="page hidden h-full">
-                    <video autoplay muted loop id="journal-video-bg">
-                        <source src="https://assets.mixkit.co/videos/preview/mixkit-calm-sea-waves-on-the-beach-1101-large.mp4" type="video/mp4">
-                    </video>
-                    <div class="journal-content">
-                        <div class="flex justify-between items-center mb-4 gamification-widget">
-                             <div>
-                                <h2 class="text-2xl font-bold text-purple-200" data-lang-key="journal_title">My Reflections</h2>
-                                <p class="text-purple-300/80" data-lang-key="journal_subtitle">Your private space to think and grow.</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-lg font-semibold" data-lang-key="streak_title">Daily Streak</p>
-                                <p id="streak-counter" class="text-4xl font-bold text-amber-300">🔥 0</p>
-                            </div>
-                        </div>
-                        <div id="journal-toolbar">
-                            <select class="ql-font"></select>
-                            <select class="ql-size"></select>
-                            <button class="ql-bold"></button>
-                            <button class="ql-italic"></button>
-                            <button class="ql-underline"></button>
-                            <select class="ql-color"></select>
-                            <button id="save-journal" class="ml-4 px-3 py-1 bg-purple-600/80 text-white text-sm rounded-md hover:bg-purple-700/80" data-lang-key="save_button">Save</button>
-                        </div>
-                        <div id="journal-editor"></div>
-                        <div class="mt-4 gamification-widget" style="animation-delay: 0.2s;">
-                             <h3 class="font-semibold mb-2" data-lang-key="badges_title">Achievements</h3>
-                             <div id="badges-container" class="flex space-x-4">
-                                <!-- Badges will be injected here -->
-                             </div>
-                        </div>
+                    <div id="journal-toolbar">
+                        <select class="ql-font"></select>
+                        <select class="ql-size"></select>
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-underline"></button>
+                        <select class="ql-color"></select>
+                        <button class="ql-list" value="ordered"></button>
+                        <button class="ql-list" value="bullet"></button>
+                        <button id="save-journal" class="ml-4 px-3 py-1 bg-purple-600/80 text-white text-sm rounded-md hover:bg-purple-700/80">Save Entry</button>
                     </div>
+                    <div id="journal-editor"></div>
                 </div>
 
                 <!-- History Page -->
                 <div id="history-page" class="page hidden">
-                    <h2 class="text-2xl font-bold text-purple-300 mb-4" data-lang-key="history_title">Your Past Conversations</h2>
+                    <h2 class="text-2xl font-bold text-purple-300 mb-4">Your Past Conversations</h2>
                     <div id="history-container" class="space-y-4">
-                        <p class="text-gray-400" data-lang-key="no_history">No memories yet. Start a conversation with the Guide!</p>
+                        <!-- History items will be loaded here -->
+                        <p class="text-gray-400">No memories yet. Start a conversation with the Guide!</p>
                     </div>
                 </div>
 
@@ -228,7 +148,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             // --- Three.js Background ---
             let scene, camera, renderer, stars;
-            // ... (existing background code is unchanged) ...
             function initBackground() {
                 scene = new THREE.Scene();
                 camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
@@ -266,7 +185,6 @@
             });
             initBackground();
 
-
             // --- App Logic ---
             const pages = {
                 guide: document.getElementById('guide-page'),
@@ -283,69 +201,6 @@
             const API_KEY = 'AIzaSyDRZgpN6MJtV57Zoammjbl7-FzmmUTQItc';
             const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
             let currentChat = [];
-            let currentLang = 'en';
-
-            // --- Multi-Language Support ---
-            const langStrings = {
-                en: {
-                    nav_guide: 'Guide', nav_journal: 'Journal', nav_memories: 'Memories',
-                    welcome_message: "Hey! What's on your mind? Lay it on me. I'm here to listen.",
-                    thinking: 'Thinking...', 
-                    loading_1: 'Connecting to the cosmos...',
-                    loading_2: 'Consulting ancient texts...',
-                    loading_3: 'Crafting your guidance...',
-                    placeholder_prompt: "Just type what you're feeling...",
-                    send_button: 'Send', journal_title: 'My Reflections',
-                    journal_subtitle: 'Your private space to think and grow.',
-                    streak_title: 'Daily Streak', save_button: 'Save',
-                    badges_title: 'Achievements', history_title: 'Your Past Conversations',
-                    no_history: 'No memories yet. Start a conversation with the Guide!',
-                    badge_first_entry: 'First Step', badge_first_entry_desc: 'You started your journal!',
-                    badge_7_day_streak: 'Consistent Mind', badge_7_day_streak_desc: '7-day journaling streak!',
-                    journal_saved: 'Journal entry saved!',
-                },
-                hi: {
-                    nav_guide: 'गाइड', nav_journal: 'जर्नल', nav_memories: 'यादें',
-                    welcome_message: 'नमस्ते! आपके मन में क्या है? मुझे बताएं। मैं सुनने के लिए यहां हूं।',
-                    thinking: 'सोच रहा हूँ...', 
-                    loading_1: 'ब्रह्मांड से जुड़ रहा है...',
-                    loading_2: 'प्राचीन ग्रंथों से परामर्श...',
-                    loading_3: 'आपके लिए मार्गदर्शन तैयार हो रहा है...',
-                    placeholder_prompt: 'आप जो महसूस कर रहे हैं उसे टाइप करें...',
-                    send_button: 'भेजें', journal_title: 'मेरे विचार',
-                    journal_subtitle: 'सोचने और बढ़ने के लिए आपकी निजी जगह।',
-                    streak_title: 'दैनिक स्ट्रीक', save_button: 'सहेजें',
-                    badges_title: 'उपलब्धियां', history_title: 'आपकी पिछली बातचीत',
-                    no_history: 'अभी तक कोई यादें नहीं। गाइड के साथ बातचीत शुरू करें!',
-                    badge_first_entry: 'पहला कदम', badge_first_entry_desc: 'आपने अपनी पत्रिका शुरू की!',
-                    badge_7_day_streak: 'लगातार मन', badge_7_day_streak_desc: '7-दिन की जर्नलिंग स्ट्रीक!',
-                    journal_saved: 'जर्नल प्रविष्टि सहेजी गई!',
-                }
-            };
-
-            function updateLanguage(lang) {
-                currentLang = lang;
-                localStorage.setItem('preferredLang', lang);
-                document.querySelectorAll('[data-lang-key]').forEach(el => {
-                    const key = el.dataset.langKey;
-                    if (langStrings[lang][key]) {
-                        if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
-                            el.placeholder = langStrings[lang][key];
-                        } else {
-                            el.innerHTML = langStrings[lang][key];
-                        }
-                    }
-                });
-                document.getElementById('lang-en').classList.toggle('bg-purple-600/50', lang === 'en');
-                document.getElementById('lang-en').classList.toggle('bg-transparent', lang !== 'en');
-                document.getElementById('lang-hi').classList.toggle('bg-purple-600/50', lang === 'hi');
-                document.getElementById('lang-hi').classList.toggle('bg-transparent', lang !== 'hi');
-                 if(journal) journal.getModule('toolbar').container.querySelector('#save-journal').textContent = langStrings[lang].save_button;
-
-            }
-            
-            document.getElementById('lang-en').addEventListener('click', () => updateLanguage('en'));
-            document.getElementById('lang-hi').addEventListener('click', () => updateLanguage('hi'));
 
             // --- Navigation ---
             navButtons.forEach(button => {
@@ -361,29 +216,8 @@
                 });
             });
 
-            // --- Journaling & Gamification ---
+            // --- Journaling ---
             let journal;
-            const badges = {
-                'first_entry': { id: 'first_entry', icon: '✨', unlocked: false },
-                '7_day_streak': { id: '7_day_streak', icon: '📅', unlocked: false },
-            };
-
-            function updateGamificationDisplay() {
-                const stats = JSON.parse(localStorage.getItem('journalStats')) || { streak: 0, lastEntryDate: null, badges: {} };
-                document.getElementById('streak-counter').innerHTML = `🔥 ${stats.streak}`;
-                
-                const badgesContainer = document.getElementById('badges-container');
-                badgesContainer.innerHTML = '';
-                Object.values(badges).forEach(badge => {
-                     const isUnlocked = stats.badges[badge.id];
-                     const badgeEl = document.createElement('div');
-                     badgeEl.className = `badge p-2 rounded-full bg-black/30 ${isUnlocked ? 'unlocked' : ''}`;
-                     badgeEl.innerHTML = `<div class="text-3xl">${badge.icon}</div>`;
-                     badgeEl.title = langStrings[currentLang][`badge_${badge.id}_desc`];
-                     badgesContainer.appendChild(badgeEl);
-                });
-            }
-
             function initJournal() {
                 if (!journal) {
                     journal = new Quill('#journal-editor', {
@@ -391,38 +225,22 @@
                         modules: { toolbar: '#journal-toolbar' }
                     });
                     const savedEntry = localStorage.getItem('journalEntry');
-                    if (savedEntry) journal.setContents(JSON.parse(savedEntry));
-                    
+                    if (savedEntry) {
+                        journal.setContents(JSON.parse(savedEntry));
+                    }
                     document.getElementById('save-journal').addEventListener('click', () => {
                         localStorage.setItem('journalEntry', JSON.stringify(journal.getContents()));
-                        
-                        let stats = JSON.parse(localStorage.getItem('journalStats')) || { streak: 0, lastEntryDate: null, badges: {} };
-                        const today = new Date().toDateString();
-                        const yesterday = new Date(Date.now() - 86400000).toDateString();
-
-                        if (stats.lastEntryDate !== today) {
-                            stats.streak = (stats.lastEntryDate === yesterday) ? stats.streak + 1 : 1;
-                            stats.lastEntryDate = today;
-                        }
-                        
-                        // Badge logic
-                        if (!stats.badges.first_entry) stats.badges.first_entry = true;
-                        if (stats.streak >= 7 && !stats.badges['7_day_streak']) stats.badges['7_day_streak'] = true;
-
-                        localStorage.setItem('journalStats', JSON.stringify(stats));
-                        updateGamificationDisplay();
-                        alert(langStrings[currentLang].journal_saved);
+                        alert('Your journal entry has been saved!');
                     });
                 }
-                updateGamificationDisplay();
             }
 
             // --- History ---
-             function loadHistory() {
+            function loadHistory() {
                 const allHistory = JSON.parse(localStorage.getItem('spiritualGuideAllChats')) || [];
                 historyContainer.innerHTML = '';
                 if (allHistory.length === 0) {
-                    historyContainer.innerHTML = `<p class="text-gray-400" data-lang-key="no_history">${langStrings[currentLang].no_history}</p>`;
+                    historyContainer.innerHTML = '<p class="text-gray-400">No memories yet. Start a conversation with the Guide!</p>';
                     return;
                 }
                 allHistory.reverse().forEach((chat, index) => {
@@ -431,6 +249,7 @@
                     historyItem.className = 'p-4 bg-black/20 rounded-lg cursor-pointer hover:bg-purple-900/50 transition-colors';
                     historyItem.innerHTML = `<h3 class="font-semibold text-purple-300 truncate">${firstUserMessage}</h3><p class="text-sm text-gray-500">${new Date(chat[0]?.timestamp).toLocaleString()}</p>`;
                     historyItem.addEventListener('click', () => {
+                        // Switch to guide and load this chat
                         document.querySelector('.nav-btn[data-page="guide"]').click();
                         chatContainer.innerHTML = '';
                         currentChat = chat;
@@ -439,25 +258,19 @@
                     historyContainer.appendChild(historyItem);
                 });
             }
-             function saveCurrentChat() {
+            
+            // --- Chat ---
+            function saveCurrentChat() {
                 if (currentChat.length === 0) return;
                 let allHistory = JSON.parse(localStorage.getItem('spiritualGuideAllChats')) || [];
-                const existingChatIndex = allHistory.findIndex(
-                    (chat) => chat.length > 0 && currentChat.length > 0 && chat[0].timestamp === currentChat[0].timestamp
-                );
-
-                if (existingChatIndex > -1) {
-                    allHistory[existingChatIndex] = currentChat;
-                } else {
-                    allHistory.push(currentChat);
-                }
+                // Simple approach: save as a new entry every time a message is sent.
+                // A more robust system would update an existing session.
+                allHistory.push(currentChat);
                 localStorage.setItem('spiritualGuideAllChats', JSON.stringify(allHistory));
             }
 
-
-            // --- Chat ---
             function appendMessage(message, sender, animate = true) {
-                 const wrapper = document.createElement('div');
+                const wrapper = document.createElement('div');
                 wrapper.className = `${sender}-message mb-4 flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
                 if (!animate) wrapper.style.animation = 'none';
 
@@ -474,38 +287,21 @@
                 const userMessage = userInput.value.trim();
                 if (!userMessage) return;
 
-                if (currentChat.length === 0) {
+                if (currentChat.length === 0) { // First message of a new chat
                     chatContainer.innerHTML = '';
                 }
 
                 appendMessage(userMessage, 'user');
                 currentChat.push({ sender: 'user', message: userMessage, timestamp: new Date() });
                 userInput.value = '';
-                
-                // --- New Loading Animation Logic ---
                 loadingIndicator.classList.remove('hidden');
-                const loadingText = document.getElementById('loading-text');
-                const loadingMessages = [langStrings[currentLang].loading_1, langStrings[currentLang].loading_2, langStrings[currentLang].loading_3];
-                let messageIndex = 0;
-                loadingText.textContent = loadingMessages[messageIndex];
-                const loadingInterval = setInterval(() => {
-                    messageIndex = (messageIndex + 1) % loadingMessages.length;
-                    loadingText.textContent = loadingMessages[messageIndex];
-                }, 3500);
-
-                // Ensure UI updates before fetch
-                await new Promise(resolve => setTimeout(resolve, 0));
 
                 try {
-                    const systemPrompt = `You are 'My Soul,' a wise and empathetic friend. Your tone is not like a monk; it's like a deep conversation with a friend who understands spiritual philosophies. You MUST reply in the user's specified language: ${currentLang === 'hi' ? 'Hindi' : 'English'}.
-                    A user will share a mental or personal problem. Your task is to analyze it using the timeless wisdom of the Bhagavad Gita, the Puranas, and universal principles from other world religions, and provide guidance.
-                    Your response MUST be in a valid JSON format: {"type": "OBJECT", "properties": { "empathy": { "type": "STRING" }, "analysis_and_solution": { "type": "STRING" }, "story": { "type": "STRING" } } }.
-                    1.  'empathy': Start by being a good friend. Listen and validate their feelings. (e.g., "Hey, I hear you. That sounds incredibly heavy, and it's completely valid to feel that way.")
-                    2.  'analysis_and_solution': This is the core. Analyze their problem through a spiritual lens. Connect their struggle to a concept like 'Karma' (action/consequence), 'Dharma' (your purpose), 'Maya' (the illusion of worldly attachment), or selfless action from the Gita. Explain the concept simply and provide practical, actionable steps based on it. Make the ancient wisdom relevant for today. Use markdown for clarity.
-                    3.  'story': Tell a short, modern, relatable story about a character facing a similar issue. The character's journey should subtly show how they applied the spiritual lesson to overcome their problem and grow from it.`;
-
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 25000);
+                    const systemPrompt = `You are 'Jnana,' a friendly, modern guide for Gen Z. Your tone is like a wise older friend—supportive, cool, and never preachy. Ditch the old-timey talk.
+                    A user will share a problem. Your response MUST be in a valid JSON format: {"type": "OBJECT", "properties": { "empathy": { "type": "STRING" }, "solution": { "type": "STRING" }, "story": { "type": "STRING" } } }.
+                    1.  'empathy': Start by validating their feelings. Be relatable. (e.g., "Ugh, that sounds super tough. It makes total sense why you're feeling that way.")
+                    2.  'solution': Give clear, actionable advice based on universal wisdom (like karma, mindfulness, dharma) but explain it in simple, modern terms. Use markdown for lists or emphasis.
+                    3.  'story': Tell a short, relatable story about someone in a similar situation who figures it out. It should feel like a modern parable, not an ancient text. The character should be relatable to a young person.`;
 
                     const response = await fetch(API_URL, {
                         method: 'POST',
@@ -517,59 +313,33 @@
                                 responseMimeType: "application/json",
                                 responseSchema: {
                                     type: "OBJECT",
-                                    properties: { 
-                                        "empathy": { "type": "STRING" }, 
-                                        "analysis_and_solution": { "type": "STRING" }, 
-                                        "story": { "type": "STRING" } 
-                                    }
+                                    properties: { "empathy": { "type": "STRING" }, "solution": { "type": "STRING" }, "story": { "type": "STRING" } }
                                 }
                             }
                         }),
-                        signal: controller.signal
                     });
 
-                    clearTimeout(timeoutId);
-
-                    if (!response.ok) {
-                        throw new Error(`API error: ${response.status} ${response.statusText}`);
-                    }
+                    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
 
                     const data = await response.json();
+                    const jsonResponse = JSON.parse(data.candidates[0].content.parts[0].text);
+                    const { empathy, solution, story } = jsonResponse;
                     
-                    if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content) {
-                        console.error("API Error: Invalid response structure, no candidates.", data);
-                        throw new Error("The AI returned an empty or invalid response. This might be due to a safety block or an internal error.");
-                    }
-
-                    let jsonResponse;
-                    try {
-                        jsonResponse = JSON.parse(data.candidates[0].content.parts[0].text);
-                    } catch (parseError) {
-                        console.error("API Error: Failed to parse JSON response.", data.candidates[0].content.parts[0].text);
-                        throw new Error("The AI's response was not in the expected format. Let's try asking that a different way.");
-                    }
-
-                    const { empathy, analysis_and_solution, story } = jsonResponse;
-                    
-                    const fullAiResponse = `**${currentLang === 'hi' ? 'सबसे पहले, दोस्त:' : "First off, my friend:"}**\n${empathy}\n\n**${currentLang === 'hi' ? 'गहरी डुबकी लगाते हैं:' : "Let's dive deeper:"}**\n${analysis_and_solution}\n\n**${currentLang === 'hi' ? 'यहाँ एक कहानी है:' : "Here's a little story for you:"}**\n${story}`;
+                    const fullAiResponse = `**First, let's talk about it:**\n${empathy}\n\n**Here's a game plan:**\n${solution}\n\n**Sound familiar? Check this out:**\n${story}`;
 
                     appendMessage(fullAiResponse, 'ai');
                     currentChat.push({ sender: 'ai', message: fullAiResponse, timestamp: new Date() });
                     saveCurrentChat();
+                    
+                    // After the first successful interaction, this chat is no longer "new"
+                    // A new chat will be started next time the container is empty.
+                    // This is a simple way to manage chat sessions. A button "New Chat" would be a good addition.
+
 
                 } catch (error) {
                     console.error("Error fetching guidance:", error);
-                    let errorMessage = "Oops, my connection to the cosmos just fizzled out. Let's try that again in a bit.";
-                     if (error.name === 'AbortError') {
-                        errorMessage = "The connection timed out. The universe is taking a little long to reply. Please try again.";
-                    } else if (error.message.includes("API error")) {
-                        errorMessage = "There was an issue with the connection to the guide. Please check your network or try again later.";
-                    } else if (error.message.includes("AI's response") || error.message.includes("empty")) {
-                        errorMessage = error.message;
-                    }
-                    appendMessage(errorMessage, 'ai');
+                    appendMessage("Oops, my connection to the cosmos just fizzled out. Let's try that again in a bit.", 'ai');
                 } finally {
-                    clearInterval(loadingInterval);
                     loadingIndicator.classList.add('hidden');
                 }
             }
@@ -581,10 +351,6 @@
                     handleSend();
                 }
             });
-            
-            // Initial Load
-            const savedLang = localStorage.getItem('preferredLang') || 'en';
-            updateLanguage(savedLang);
         });
     </script>
 </body>
