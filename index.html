@@ -103,31 +103,52 @@
             transform: scale(1.05);
         }
         
-        /* New Loading Animation Styles */
-        .cosmic-loader {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
+        /* New "Soul Spark" Loading Animation */
+        .soul-spark-loader {
+            position: relative;
+            width: 60px;
+            height: 60px;
         }
-        .cosmic-orb {
-            width: 10px;
-            height: 10px;
-            background-color: #c084fc;
+        .spark-core {
+            width: 16px;
+            height: 16px;
+            background: #f0abfc;
             border-radius: 50%;
-            animation: pulse 1.4s infinite ease-in-out both;
+            position: absolute;
+            top: 22px;
+            left: 22px;
+            animation: core-pulse 2s infinite ease-in-out;
+            box-shadow: 0 0 10px #f0abfc, 0 0 20px #f0abfc, 0 0 30px #e879f9;
         }
-        .cosmic-orb:nth-child(1) { animation-delay: -0.32s; }
-        .cosmic-orb:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes pulse {
-            0%, 80%, 100% {
-                transform: scale(0);
-                opacity: 0.5;
-            } 40% {
-                transform: scale(1.0);
-                opacity: 1;
-            }
+        .spark-particle {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #e879f9;
+            transform-origin: -20px -20px;
+            animation: radiate 2s infinite linear;
+            opacity: 0;
         }
+        .spark-particle:nth-child(2) { animation-delay: 0.25s; }
+        .spark-particle:nth-child(3) { animation-delay: 0.5s; }
+        .spark-particle:nth-child(4) { animation-delay: 0.75s; }
+        .spark-particle:nth-child(5) { animation-delay: 1s; }
+        .spark-particle:nth-child(6) { animation-delay: 1.25s; }
+        .spark-particle:nth-child(7) { animation-delay: 1.5s; }
+        .spark-particle:nth-child(8) { animation-delay: 1.75s; }
+
+        @keyframes core-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        @keyframes radiate {
+            0% { transform: rotate(0deg) translateX(30px) scale(0.5); opacity: 1; }
+            100% { transform: rotate(360deg) translateX(30px) scale(1); opacity: 0; }
+        }
+
     </style>
 </head>
 <body class="bg-gray-900">
@@ -160,13 +181,19 @@
                            <p data-lang-key="welcome_message">Hey! What's on your mind? Lay it on me. I'm here to listen.</p>
                         </div>
                     </main>
-                    <div id="loading-indicator" class="hidden py-4 flex justify-center items-center">
-                         <div class="cosmic-loader">
-                            <div class="cosmic-orb"></div>
-                            <div class="cosmic-orb"></div>
-                            <div class="cosmic-orb"></div>
+                    <div id="loading-indicator" class="hidden py-4 flex flex-col justify-center items-center">
+                         <div class="soul-spark-loader">
+                            <div class="spark-core"></div>
+                            <div class="spark-particle"></div>
+                            <div class="spark-particle"></div>
+                            <div class="spark-particle"></div>
+                            <div class="spark-particle"></div>
+                            <div class="spark-particle"></div>
+                            <div class="spark-particle"></div>
+                            <div class="spark-particle"></div>
+                            <div class="spark-particle"></div>
                          </div>
-                         <p class="text-purple-300 animate-pulse text-sm ml-4" data-lang-key="thinking">Thinking...</p>
+                         <p id="loading-text" class="text-purple-300 text-sm mt-4"></p>
                     </div>
                     <footer class="mt-4">
                         <div class="flex items-center space-x-4">
@@ -291,7 +318,11 @@
                 en: {
                     nav_guide: 'Guide', nav_journal: 'Journal', nav_memories: 'Memories',
                     welcome_message: "Hey! What's on your mind? Lay it on me. I'm here to listen.",
-                    thinking: 'Thinking...', placeholder_prompt: "Just type what you're feeling...",
+                    thinking: 'Thinking...', 
+                    loading_1: 'Connecting to the cosmos...',
+                    loading_2: 'Consulting ancient texts...',
+                    loading_3: 'Crafting your guidance...',
+                    placeholder_prompt: "Just type what you're feeling...",
                     send_button: 'Send', journal_title: 'My Reflections',
                     journal_subtitle: 'Your private space to think and grow.',
                     streak_title: 'Daily Streak', save_button: 'Save',
@@ -304,7 +335,11 @@
                 hi: {
                     nav_guide: 'गाइड', nav_journal: 'जर्नल', nav_memories: 'यादें',
                     welcome_message: 'नमस्ते! आपके मन में क्या है? मुझे बताएं। मैं सुनने के लिए यहां हूं।',
-                    thinking: 'सोच रहा हूँ...', placeholder_prompt: 'आप जो महसूस कर रहे हैं उसे टाइप करें...',
+                    thinking: 'सोच रहा हूँ...', 
+                    loading_1: 'ब्रह्मांड से जुड़ रहा है...',
+                    loading_2: 'प्राचीन ग्रंथों से परामर्श...',
+                    loading_3: 'आपके लिए मार्गदर्शन तैयार हो रहा है...',
+                    placeholder_prompt: 'आप जो महसूस कर रहे हैं उसे टाइप करें...',
                     send_button: 'भेजें', journal_title: 'मेरे विचार',
                     journal_subtitle: 'सोचने और बढ़ने के लिए आपकी निजी जगह।',
                     streak_title: 'दैनिक स्ट्रीक', save_button: 'सहेजें',
@@ -411,7 +446,6 @@
             }
 
             // --- History ---
-            // ... (loadHistory and saveCurrentChat functions are unchanged) ...
              function loadHistory() {
                 const allHistory = JSON.parse(localStorage.getItem('spiritualGuideAllChats')) || [];
                 historyContainer.innerHTML = '';
@@ -436,14 +470,21 @@
              function saveCurrentChat() {
                 if (currentChat.length === 0) return;
                 let allHistory = JSON.parse(localStorage.getItem('spiritualGuideAllChats')) || [];
-                allHistory.push(currentChat);
+                const existingChatIndex = allHistory.findIndex(
+                    (chat) => chat.length > 0 && currentChat.length > 0 && chat[0].timestamp === currentChat[0].timestamp
+                );
+
+                if (existingChatIndex > -1) {
+                    allHistory[existingChatIndex] = currentChat;
+                } else {
+                    allHistory.push(currentChat);
+                }
                 localStorage.setItem('spiritualGuideAllChats', JSON.stringify(allHistory));
             }
 
 
             // --- Chat ---
             function appendMessage(message, sender, animate = true) {
-                // ... (unchanged) ...
                  const wrapper = document.createElement('div');
                 wrapper.className = `${sender}-message mb-4 flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
                 if (!animate) wrapper.style.animation = 'none';
@@ -468,7 +509,20 @@
                 appendMessage(userMessage, 'user');
                 currentChat.push({ sender: 'user', message: userMessage, timestamp: new Date() });
                 userInput.value = '';
+                
+                // --- New Loading Animation Logic ---
                 loadingIndicator.classList.remove('hidden');
+                const loadingText = document.getElementById('loading-text');
+                const loadingMessages = [langStrings[currentLang].loading_1, langStrings[currentLang].loading_2, langStrings[currentLang].loading_3];
+                let messageIndex = 0;
+                loadingText.textContent = loadingMessages[messageIndex];
+                const loadingInterval = setInterval(() => {
+                    messageIndex = (messageIndex + 1) % loadingMessages.length;
+                    loadingText.textContent = loadingMessages[messageIndex];
+                }, 3500);
+
+                // Ensure UI updates before fetch
+                await new Promise(resolve => setTimeout(resolve, 0));
 
                 try {
                     const systemPrompt = `You are 'My Soul,' a wise and empathetic friend. Your tone is not like a monk; it's like a deep conversation with a friend who understands spiritual philosophies. You MUST reply in the user's specified language: ${currentLang === 'hi' ? 'Hindi' : 'English'}.
@@ -477,6 +531,9 @@
                     1.  'empathy': Start by being a good friend. Listen and validate their feelings. (e.g., "Hey, I hear you. That sounds incredibly heavy, and it's completely valid to feel that way.")
                     2.  'analysis_and_solution': This is the core. Analyze their problem through a spiritual lens. Connect their struggle to a concept like 'Karma' (action/consequence), 'Dharma' (your purpose), 'Maya' (the illusion of worldly attachment), or selfless action from the Gita. Explain the concept simply and provide practical, actionable steps based on it. Make the ancient wisdom relevant for today. Use markdown for clarity.
                     3.  'story': Tell a short, modern, relatable story about a character facing a similar issue. The character's journey should subtly show how they applied the spiritual lesson to overcome their problem and grow from it.`;
+
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 25000);
 
                     const response = await fetch(API_URL, {
                         method: 'POST',
@@ -496,12 +553,30 @@
                                 }
                             }
                         }),
+                        signal: controller.signal
                     });
 
-                    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status} ${response.statusText}`);
+                    }
 
                     const data = await response.json();
-                    const jsonResponse = JSON.parse(data.candidates[0].content.parts[0].text);
+                    
+                    if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content) {
+                        console.error("API Error: Invalid response structure, no candidates.", data);
+                        throw new Error("The AI returned an empty or invalid response. This might be due to a safety block or an internal error.");
+                    }
+
+                    let jsonResponse;
+                    try {
+                        jsonResponse = JSON.parse(data.candidates[0].content.parts[0].text);
+                    } catch (parseError) {
+                        console.error("API Error: Failed to parse JSON response.", data.candidates[0].content.parts[0].text);
+                        throw new Error("The AI's response was not in the expected format. Let's try asking that a different way.");
+                    }
+
                     const { empathy, analysis_and_solution, story } = jsonResponse;
                     
                     const fullAiResponse = `**${currentLang === 'hi' ? 'सबसे पहले, दोस्त:' : "First off, my friend:"}**\n${empathy}\n\n**${currentLang === 'hi' ? 'गहरी डुबकी लगाते हैं:' : "Let's dive deeper:"}**\n${analysis_and_solution}\n\n**${currentLang === 'hi' ? 'यहाँ एक कहानी है:' : "Here's a little story for you:"}**\n${story}`;
@@ -512,8 +587,17 @@
 
                 } catch (error) {
                     console.error("Error fetching guidance:", error);
-                    appendMessage("Oops, my connection to the cosmos just fizzled out. Let's try that again in a bit.", 'ai');
+                    let errorMessage = "Oops, my connection to the cosmos just fizzled out. Let's try that again in a bit.";
+                     if (error.name === 'AbortError') {
+                        errorMessage = "The connection timed out. The universe is taking a little long to reply. Please try again.";
+                    } else if (error.message.includes("API error")) {
+                        errorMessage = "There was an issue with the connection to the guide. Please check your network or try again later.";
+                    } else if (error.message.includes("AI's response") || error.message.includes("empty")) {
+                        errorMessage = error.message;
+                    }
+                    appendMessage(errorMessage, 'ai');
                 } finally {
+                    clearInterval(loadingInterval);
                     loadingIndicator.classList.add('hidden');
                 }
             }
