@@ -103,50 +103,30 @@
             transform: scale(1.05);
         }
         
-        /* New "Soul Spark" Loading Animation */
-        .soul-spark-loader {
-            position: relative;
-            width: 60px;
+        /* New "Breathing Orb" Loading Animation */
+        .breathing-orb-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 60px;
         }
-        .spark-core {
-            width: 16px;
-            height: 16px;
-            background: #f0abfc;
-            border-radius: 50%;
-            position: absolute;
-            top: 22px;
-            left: 22px;
-            animation: core-pulse 2s infinite ease-in-out;
-            box-shadow: 0 0 10px #f0abfc, 0 0 20px #f0abfc, 0 0 30px #e879f9;
-        }
-        .spark-particle {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
+        .breathing-orb {
+            width: 25px;
+            height: 25px;
             background: #e879f9;
-            transform-origin: -20px -20px;
-            animation: radiate 2s infinite linear;
-            opacity: 0;
+            border-radius: 50%;
+            animation: breathe 2.5s infinite ease-in-out;
+            box-shadow: 0 0 15px #e879f9, 0 0 30px #e879f9, 0 0 50px #c084fc;
         }
-        .spark-particle:nth-child(2) { animation-delay: 0.25s; }
-        .spark-particle:nth-child(3) { animation-delay: 0.5s; }
-        .spark-particle:nth-child(4) { animation-delay: 0.75s; }
-        .spark-particle:nth-child(5) { animation-delay: 1s; }
-        .spark-particle:nth-child(6) { animation-delay: 1.25s; }
-        .spark-particle:nth-child(7) { animation-delay: 1.5s; }
-        .spark-particle:nth-child(8) { animation-delay: 1.75s; }
-
-        @keyframes core-pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-        @keyframes radiate {
-            0% { transform: rotate(0deg) translateX(30px) scale(0.5); opacity: 1; }
-            100% { transform: rotate(360deg) translateX(30px) scale(1); opacity: 0; }
+        @keyframes breathe {
+            0%, 100% {
+                transform: scale(0.8);
+                box-shadow: 0 0 10px #e879f9, 0 0 20px #e879f9, 0 0 30px #c084fc;
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px #f0abfc, 0 0 40px #f0abfc, 0 0 60px #e879f9;
+            }
         }
 
     </style>
@@ -182,16 +162,8 @@
                         </div>
                     </main>
                     <div id="loading-indicator" class="hidden py-4 flex flex-col justify-center items-center">
-                         <div class="soul-spark-loader">
-                            <div class="spark-core"></div>
-                            <div class="spark-particle"></div>
-                            <div class="spark-particle"></div>
-                            <div class="spark-particle"></div>
-                            <div class="spark-particle"></div>
-                            <div class="spark-particle"></div>
-                            <div class="spark-particle"></div>
-                            <div class="spark-particle"></div>
-                            <div class="spark-particle"></div>
+                         <div class="breathing-orb-loader">
+                            <div class="breathing-orb"></div>
                          </div>
                          <p id="loading-text" class="text-purple-300 text-sm mt-4"></p>
                     </div>
