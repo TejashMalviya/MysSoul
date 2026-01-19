@@ -3,570 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spiritual Guide AI</title>
+    <title>AI & Payments Portal</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            color: #E0E0E0;
-        }
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        /* Custom scrollbar for a more refined look */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(192, 132, 252, 0.5);
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(192, 132, 252, 0.8);
-        }
-        .glass-effect {
-            background: rgba(17, 24, 39, 0.6);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        /* Typing animation for user prompt */
-        .user-message {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        /* Fade-in animation for AI response */
-        .ai-response {
-            animation: fadeIn 1s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        /* Loading spinner */
+        body { font-family: 'Inter', sans-serif; }
         .loader {
-            width: 48px;
-            height: 48px;
-            border: 3px solid #FFF;
-            border-radius: 50%;
-            display: inline-block;
-            position: relative;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
+            border-top-color: #6366f1; /* Indigo-500 */
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
         }
-        .loader::after {
-            content: '';  
-            box-sizing: border-box;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            border: 3px solid;
-            border-color: #a855f7 transparent;
-        }
-        @keyframes rotation {
+        @keyframes spinner {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .mood-btn {
-            transition: all 0.3s ease;
-        }
-        .mood-btn.selected {
-            transform: scale(1.1);
-            background-color: #a855f7;
-            color: white;
-            border-color: #c084fc;
-        }
-        .share-btn {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .ai-response:hover .share-btn {
-            opacity: 1;
-        }
-        .story-image-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background-color: rgba(0,0,0,0.3);
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .story-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            animation: kenBurns 20s infinite;
-        }
-        @keyframes kenBurns {
-            0%, 100% {
-                transform: scale(1) translate(0, 0);
-                opacity: 0.8;
-            }
-            50% {
-                transform: scale(1.1) translate(-2%, 2%);
-                opacity: 1;
-            }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
         }
     </style>
 </head>
-<body class="bg-gray-900">
-    <canvas id="bg-canvas"></canvas>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <div class="relative w-full h-screen flex flex-col md:flex-row items-start justify-center p-4">
+    <!-- Professional Navbar -->
+    <nav class="bg-slate-900 text-white shadow-xl sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center font-bold text-lg">A</div>
+                <span class="text-xl font-semibold tracking-tight">Alpha<span class="text-indigo-400">Project</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-xs font-medium uppercase tracking-wider text-slate-400">System Status</div>
+                <span id="connection-status" class="text-xs font-mono bg-indigo-900 text-indigo-200 px-3 py-1 rounded-full border border-indigo-700">Initializing...</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto px-6 py-10 max-w-5xl">
         
-        <!-- Main Chat Interface -->
-        <div class="w-full max-w-4xl h-full flex flex-col glass-effect rounded-2xl shadow-2xl overflow-hidden">
-            <!-- Header -->
-            <header class="p-4 border-b border-gray-700/50 flex justify-between items-center">
-                <div></div> <!-- Spacer -->
-                <div class="text-center">
-                    <h1 class="text-2xl font-bold text-purple-300">My Soul: Your Spiritual Guide</h1>
-                    <p class="text-sm text-gray-400">Seek wisdom from ancient teachings for modern problems.</p>
-                </div>
-                <button id="wisdom-button" title="Get Daily Wisdom" class="px-3 py-2 bg-purple-600/50 hover:bg-purple-700/70 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300">
-                     Wisdom
-                </button>
-            </header>
+        <!-- Hero / Intro -->
+        <div class="mb-10 text-center">
+            <h1 class="text-4xl font-bold text-slate-900 mb-2">Service Dashboard</h1>
+            <p class="text-slate-500 max-w-2xl mx-auto">Access our premium generative AI tools and secure payment processing gateways.</p>
+        </div>
 
-            <!-- Chat Display -->
-            <main id="chat-container" class="flex-1 p-6 overflow-y-auto custom-scrollbar">
-                <!-- Chat messages will be appended here -->
-                <div class="ai-response p-4 rounded-lg bg-black/20">
-                     <div class="prose prose-invert max-w-none text-gray-300">
-                        <p>Welcome. I am here to listen. Share the burdens of your heart or the puzzles of your mind. What is troubling you today?</p>
+        <!-- Simulation Banner -->
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 mb-8 rounded-r-lg shadow-sm flex items-start">
+            <svg class="w-5 h-5 text-amber-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div>
+                <p class="text-sm text-amber-800 font-medium">Simulation Mode Active</p>
+                <p class="text-xs text-amber-700 mt-1">Backend services are currently mocked for this preview. Transactions will not process real money.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Card 1: AI Service -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300 flex flex-col">
+                <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-slate-800 flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </span>
+                        Azure AI Generator
+                    </h3>
+                    <span class="text-xs font-semibold px-2 py-1 bg-green-100 text-green-700 rounded">Online</span>
+                </div>
+                
+                <div class="p-6 flex-grow flex flex-col">
+                    <label class="block text-sm font-medium text-slate-600 mb-2">Input Prompt</label>
+                    <textarea id="ai-prompt" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all resize-none text-sm leading-relaxed" rows="4" placeholder="Describe what you want the AI to explain or generate..."></textarea>
+                    
+                    <div id="ai-result" class="mt-4 p-4 bg-indigo-50 border border-indigo-100 rounded-lg text-slate-700 text-sm hidden min-h-[100px] leading-relaxed relative">
+                        <!-- Content injected here -->
+                    </div>
+
+                    <div class="mt-auto pt-6">
+                        <button onclick="generateContent()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 flex justify-center items-center group">
+                            <span id="ai-btn-text">Generate Content</span>
+                            <div id="ai-loader" class="loader ease-linear rounded-full border-2 border-t-2 border-slate-400 h-4 w-4 ml-2 hidden"></div>
+                            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </button>
                     </div>
                 </div>
-            </main>
-
-            <!-- Loading Indicator -->
-            <div id="loading-indicator" class="hidden p-6 flex justify-center items-center">
-                 <div class="flex flex-col items-center">
-                    <div class="loader mb-2"></div>
-                    <p class="text-purple-300 animate-pulse">Consulting the ancient scrolls...</p>
-                 </div>
             </div>
 
-            <!-- Input Area -->
-            <footer class="p-4 border-t border-gray-700/50">
-                <div class="flex items-center space-x-4">
-                    <textarea id="user-input" class="flex-1 p-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 resize-none" rows="1" placeholder="Tell me your problem..."></textarea>
-                    <button id="send-button" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 duration-300">
-                        Seek Guidance
+            <!-- Card 2: Payment Gateway -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300 flex flex-col">
+                <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-slate-800 flex items-center">
+                        <span class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </span>
+                        Razorpay Secure
+                    </h3>
+                    <span class="text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-700 rounded">Test Mode</span>
+                </div>
+
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="bg-slate-50 rounded-lg p-5 border border-slate-100 mb-6">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm font-medium text-slate-500">Micro Transaction</span>
+                            <span class="text-xs text-indigo-600 font-semibold bg-indigo-50 px-2 py-0.5 rounded">PROMO</span>
+                        </div>
+                        <div class="flex justify-between items-end">
+                            <span class="text-3xl font-bold text-slate-800">₹2.00</span>
+                            <span class="text-xs text-slate-400 mb-1">INR</span>
+                        </div>
+                    </div>
+
+                    <div id="payment-log" class="flex-grow bg-slate-900 rounded-lg p-4 mb-4 overflow-y-auto max-h-32 text-xs font-mono text-green-400 shadow-inner">
+                        <div class="opacity-50 border-b border-slate-700 pb-1 mb-2">System Console</div>
+                        <div id="log-content">> Ready to process transaction...</div>
+                    </div>
+
+                    <button id="pay-btn" onclick="initiatePayment()" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 shadow-sm flex items-center justify-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Confirm Payment (₹2)
                     </button>
                 </div>
-                <div class="flex justify-center items-center mt-3 space-x-3">
-                    <span class="text-sm text-gray-400">My current mood:</span>
-                    <button class="mood-btn px-3 py-1 border border-gray-600 rounded-full text-sm" data-mood="Happy">😊 Happy</button>
-                    <button class="mood-btn px-3 py-1 border border-gray-600 rounded-full text-sm" data-mood="Anxious">😥 Anxious</button>
-                    <button class="mood-btn px-3 py-1 border border-gray-600 rounded-full text-sm" data-mood="Sad">😔 Sad</button>
-                    <button class="mood-btn px-3 py-1 border border-gray-600 rounded-full text-sm" data-mood="Reflective">🤔 Reflective</button>
-                </div>
-                 <div class="flex justify-between items-center mt-2">
-                    <button id="clear-history-button" class="text-xs text-gray-500 hover:text-red-400 transition-colors">Clear History</button>
-                 </div>
-            </footer>
-        </div>
-
-    </div>
-    
-    <!-- Wisdom Modal -->
-    <div id="wisdom-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="glass-effect rounded-2xl p-8 max-w-lg w-full text-center relative">
-            <h2 class="text-2xl font-bold text-purple-300 mb-4">A Moment of Wisdom</h2>
-            <p id="wisdom-text" class="text-lg text-gray-200 mb-6"></p>
-            <button id="close-wisdom-modal" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg">Close</button>
-        </div>
-    </div>
-    
-    <!-- Confirmation Modal -->
-    <div id="confirm-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="glass-effect rounded-2xl p-8 max-w-md w-full text-center relative">
-            <h2 id="confirm-title" class="text-xl font-bold text-yellow-300 mb-4">Are you sure?</h2>
-            <p id="confirm-text" class="text-md text-gray-200 mb-6">Clearing the history cannot be undone.</p>
-            <div class="flex justify-center space-x-4">
-                <button id="confirm-yes-btn" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg">Yes, Clear</button>
-                <button id="confirm-no-btn" class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg">Cancel</button>
             </div>
         </div>
-    </div>
 
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-50 border-t border-slate-200 mt-auto">
+        <div class="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
+            <div>&copy; 2024 Project Alpha. All rights reserved.</div>
+            <div class="flex space-x-4 mt-4 md:mt-0">
+                <a href="#" class="hover:text-indigo-600 transition">Privacy</a>
+                <a href="#" class="hover:text-indigo-600 transition">Terms</a>
+                <a href="#" class="hover:text-indigo-600 transition">Support</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Three.js Animated Background ---
-            let scene, camera, renderer, stars;
+        // --- CONFIGURATION ---
+        // Set this to FALSE when running with the real Node.js backend
+        const SIMULATION_MODE = true; 
+        const BACKEND_URL = "http://localhost:3000";
 
-            function initBackground() {
-                scene = new THREE.Scene();
-                camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-                camera.position.z = 1;
-                camera.rotation.x = Math.PI / 2;
+        // --- UTILS ---
+        function logPayment(msg) {
+            const container = document.getElementById('log-content');
+            const entry = document.createElement('div');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric", second: "numeric"});
+            entry.innerHTML = `<span class="text-slate-500 mr-2">[${time}]</span>${msg}`;
+            container.appendChild(entry);
+            
+            const logBox = document.getElementById('payment-log');
+            logBox.scrollTop = logBox.scrollHeight;
+        }
 
-                renderer = new THREE.WebGLRenderer({
-                    canvas: document.getElementById('bg-canvas'),
-                    alpha: true
-                });
-                renderer.setSize(window.innerWidth, window.innerHeight);
+        // --- AI FUNCTIONALITY ---
+        async function generateContent() {
+            const prompt = document.getElementById('ai-prompt').value;
+            const btnText = document.getElementById('ai-btn-text');
+            const loader = document.getElementById('ai-loader');
+            const resultBox = document.getElementById('ai-result');
 
-                const starGeo = new THREE.BufferGeometry();
-                const starVertices = [];
-                for (let i = 0; i < 6000; i++) {
-                    const x = (Math.random() - 0.5) * 2000;
-                    const y = (Math.random() - 0.5) * 2000;
-                    const z = (Math.random() - 0.5) * 2000;
-                    starVertices.push(x, y, z);
-                }
-                starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-
-                let sprite = new THREE.TextureLoader().load('https://threejs.org/examples/textures/sprites/disc.png');
-                let starMaterial = new THREE.PointsMaterial({
-                    color: 0xaaaaaa,
-                    size: 0.7,
-                    map: sprite,
-                    transparent: true
-                });
-
-                stars = new THREE.Points(starGeo, starMaterial);
-                scene.add(stars);
-
-                animate();
+            if(!prompt) {
+                alert("Please enter a prompt description first.");
+                return;
             }
 
-            function animate() {
-                stars.geometry.attributes.position.array.forEach((_, i) => {
-                     if (i % 3 === 2) { // z-axis
-                        stars.geometry.attributes.position.array[i] -= 0.2;
-                         if (stars.geometry.attributes.position.array[i] < -1000) {
-                            stars.geometry.attributes.position.array[i] = 1000;
-                        }
-                    }
-                });
-                stars.geometry.attributes.position.needsUpdate = true;
+            // UI Loading State
+            btnText.innerText = "Processing";
+            loader.classList.remove('hidden');
+            resultBox.classList.add('hidden');
+
+            try {
+                let data;
                 
-                renderer.render(scene, camera);
-                requestAnimationFrame(animate);
-            }
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            initBackground();
-
-            // --- Chat Application Logic ---
-            const userInput = document.getElementById('user-input');
-            const sendButton = document.getElementById('send-button');
-            const chatContainer = document.getElementById('chat-container');
-            const loadingIndicator = document.getElementById('loading-indicator');
-            const clearHistoryButton = document.getElementById('clear-history-button');
-            const wisdomButton = document.getElementById('wisdom-button');
-            const wisdomModal = document.getElementById('wisdom-modal');
-            const closeWisdomModal = document.getElementById('close-wisdom-modal');
-            const wisdomText = document.getElementById('wisdom-text');
-            const moodButtons = document.querySelectorAll('.mood-btn');
-            const confirmModal = document.getElementById('confirm-modal');
-            const confirmYesBtn = document.getElementById('confirm-yes-btn');
-            const confirmNoBtn = document.getElementById('confirm-no-btn');
-            let selectedMood = null;
-            let confirmResolve = null;
-
-
-            const API_KEY = 'AIzaSyDRZgpN6MJtV57Zoammjbl7-FzmmUTQItc'; // User provided API key
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
-            const IMAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${API_KEY}`;
-            
-            let chatHistory = [];
-
-            const wisdomQuotes = [
-                "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. - Bhagavad Gita",
-                "The mind is restless and difficult to restrain, but it is subdued by practice. - Bhagavad Gita",
-                "Calmness, gentleness, silence, self-restraint, and purity: these are the disciplines of the mind. - Bhagavad Gita",
-                "The only way to do great work is to love what you do. - Buddha",
-                "Three things cannot be long hidden: the sun, the moon, and the truth. - Buddha",
-                "Do not dwell in the past, do not dream of the future, concentrate the mind on the present moment. - Buddha",
-                "An eye for an eye will only make the whole world blind. - Mahatma Gandhi",
-                "The weak can never forgive. Forgiveness is the attribute of the strong. - Mahatma Gandhi",
-                "He who has a why to live can bear almost any how. - Friedrich Nietzsche",
-                "What is done in love is done well. - Vincent Van Gogh"
-            ];
-            
-            const appendHistoryMessage = (message, sender) => {
-                const messageWrapper = document.createElement('div');
-                const messageElement = document.createElement('div');
-                if (sender === 'user') {
-                    messageWrapper.className = 'user-message flex justify-end mb-4';
-                    messageElement.className = 'p-4 rounded-lg bg-purple-800/50 text-white max-w-xl';
-                    messageElement.textContent = message;
-                } else { // AI message from history (no image)
-                    messageWrapper.className = 'ai-response mb-4 relative group';
-                    messageElement.className = 'p-4 rounded-lg bg-black/20 text-gray-300 prose prose-invert max-w-none';
-                    messageElement.innerHTML = marked.parse(message);
-                }
-                messageWrapper.appendChild(messageElement);
-                chatContainer.appendChild(messageWrapper);
-            };
-
-            const loadChatHistory = () => {
-                const savedHistory = localStorage.getItem('spiritualGuideChatHistory');
-                if (savedHistory) {
-                     try {
-                        chatHistory = JSON.parse(savedHistory);
-                        if (Array.isArray(chatHistory)) {
-                            if (chatHistory.length > 0) {
-                                chatContainer.innerHTML = ''; // Clear welcome message
-                            }
-                            chatHistory.forEach(item => {
-                                if(item.user && item.ai) {
-                                    appendHistoryMessage(item.user, 'user');
-                                    appendHistoryMessage(item.ai, 'ai');
-                                }
-                            });
-                            if(chatHistory.length > 0) {
-                                chatContainer.scrollTop = chatContainer.scrollHeight;
-                            }
-                        } else {
-                            chatHistory = []; 
-                        }
-                    } catch(e) {
-                        console.error("Could not parse chat history:", e);
-                        chatHistory = []; 
-                        localStorage.removeItem('spiritualGuideChatHistory');
-                    }
-                }
-            };
-
-
-            const saveChatHistory = () => {
-                localStorage.setItem('spiritualGuideChatHistory', JSON.stringify(chatHistory));
-            };
-
-            const appendMessage = (message, sender) => {
-                const messageWrapper = document.createElement('div');
-                const messageElement = document.createElement('div');
-                let imageContainer = null;
-                
-                if (sender === 'user') {
-                    messageWrapper.className = 'user-message flex justify-end mb-4';
-                    messageElement.className = 'p-4 rounded-lg bg-purple-800/50 text-white max-w-xl';
-                    messageElement.textContent = message;
-                } else {
-                    messageWrapper.className = 'ai-response mb-4 relative group';
-                    
-                    imageContainer = document.createElement('div');
-                    imageContainer.className = 'story-image-container';
-                    const imageLoader = document.createElement('div');
-                    imageLoader.className = 'loader';
-                    imageContainer.appendChild(imageLoader);
-                    messageWrapper.appendChild(imageContainer);
-
-                    messageElement.className = 'p-4 rounded-lg bg-black/20 text-gray-300 prose prose-invert max-w-none';
-                    messageElement.innerHTML = marked.parse(message);
-                    
-                    const shareButton = document.createElement('button');
-                    shareButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16"><path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>`;
-                    shareButton.className = 'share-btn absolute top-2 right-2 p-2 rounded-full bg-gray-700/50 hover:bg-purple-500/70 text-white transition-all duration-300';
-                    shareButton.title = 'Copy to Clipboard';
-                    shareButton.onclick = () => {
-                        navigator.clipboard.writeText(message).then(() => {
-                            shareButton.innerHTML = 'Copied!';
-                            setTimeout(() => {
-                                shareButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16"><path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>`;
-                            }, 2000);
-                        });
+                if (SIMULATION_MODE) {
+                    // MOCK RESPONSE
+                    await new Promise(r => setTimeout(r, 1500)); // Fake delay
+                    data = { 
+                        success: true, 
+                        data: `<span class="font-semibold text-indigo-700">Azure AI Output:</span><br> Here is a professional generated response for "${prompt}".<br><br>In a production environment, this content is streamed directly from the Azure OpenAI Service.` 
                     };
-                    messageWrapper.appendChild(shareButton);
-                }
-
-                messageWrapper.appendChild(messageElement);
-                chatContainer.appendChild(messageWrapper);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-                return imageContainer;
-            };
-
-            const generateAndDisplayImage = async (prompt, container) => {
-                try {
-                    const response = await fetch(IMAGE_API_URL, {
+                } else {
+                    // REAL BACKEND CALL
+                    const response = await fetch(`${BACKEND_URL}/api/generate-text`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            instances: [{ prompt: prompt }],
-                            parameters: { "sampleCount": 1 }
-                        })
+                        body: JSON.stringify({ prompt })
                     });
-                    if (!response.ok) throw new Error('Image generation failed.');
-                    const result = await response.json();
-                    if (result.predictions && result.predictions.length > 0) {
-                        const base64Data = result.predictions[0].bytesBase64Encoded;
-                        const imageUrl = `data:image/png;base64,${base64Data}`;
-                        const img = document.createElement('img');
-                        img.src = imageUrl;
-                        img.className = 'story-image';
-                        img.onload = () => {
-                            container.innerHTML = ''; // Clear loader
-                            container.appendChild(img);
-                        };
-                    } else {
-                         container.style.display = 'none';
-                    }
-                } catch (error) {
-                    console.error("Image generation error:", error);
-                    container.style.display = 'none';
+                    data = await response.json();
                 }
-            };
 
-            const handleSend = async () => {
-                const userMessage = userInput.value.trim();
-                if (!userMessage) return;
+                resultBox.classList.remove('hidden');
+                resultBox.innerHTML = data.data;
 
-                let fullUserMessage = userMessage;
-                if(selectedMood){
-                    fullUserMessage = `Feeling ${selectedMood}, I am struggling with this: "${userMessage}"`;
-                }
-                 if (chatHistory.length === 0) {
-                    chatContainer.innerHTML = ''; // Clear welcome message on first send
-                }
-                appendMessage(userMessage, 'user');
-                userInput.value = '';
-                loadingIndicator.classList.remove('hidden');
+            } catch (error) {
+                alert("Error connecting to AI service");
+                console.error(error);
+            } finally {
+                btnText.innerText = "Generate Content";
+                loader.classList.add('hidden');
+            }
+        }
 
-                try {
-                    const systemPrompt = `You are 'Jnana', a wise spiritual guide. A user will share a problem. You MUST respond in a valid JSON format that matches this schema: { "type": "OBJECT", "properties": { "guidanceText": { "type": "STRING" }, "imagePrompt": { "type": "STRING" } } }.
-- 'guidanceText' should contain the complete spiritual guidance in Markdown format, detecting and using the user's language (including Hinglish). It must have three sections: ### Spiritual Analysis, ### An Illustrative Story, and ### Your Path to Growth.
-- 'imagePrompt' should be a short, descriptive phrase (5-15 words) for an AI image generator, capturing the essence of the illustrative story. Example: 'A lone traveler finding a glowing flower in a dark forest, cinematic, photorealistic'.`;
-
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            systemInstruction: { parts: [{ text: systemPrompt }] },
-                            contents: [{ parts: [{ text: fullUserMessage }] }],
-                             generationConfig: {
-                                responseMimeType: "application/json",
-                                responseSchema: {
-                                    type: "OBJECT",
-                                    properties: {
-                                        "guidanceText": { "type": "STRING" },
-                                        "imagePrompt": { "type": "STRING" }
-                                    }
-                                }
-                            }
-                        }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`API error: ${response.statusText}`);
-                    }
-
-                    const data = await response.json();
-                    const jsonResponse = JSON.parse(data.candidates[0].content.parts[0].text);
-                    const { guidanceText, imagePrompt } = jsonResponse;
-                    
-                    const imageContainer = appendMessage(guidanceText, 'ai');
-                    
-                    if (imagePrompt && imageContainer) {
-                        generateAndDisplayImage(imagePrompt, imageContainer);
-                    }
-
-                    chatHistory.push({ user: userMessage, ai: guidanceText });
-                    saveChatHistory();
-
-                } catch (error) {
-                    console.error("Error fetching guidance:", error);
-                    appendMessage("I apologize, but I am unable to connect with the cosmic consciousness at this moment. Please try again later.", 'ai');
-                } finally {
-                    loadingIndicator.classList.add('hidden');
-                }
-            };
-
-            const showConfirm = () => {
-                confirmModal.classList.remove('hidden');
-                return new Promise(resolve => {
-                    confirmResolve = resolve;
-                });
-            };
-
-            confirmYesBtn.addEventListener('click', () => {
-                confirmModal.classList.add('hidden');
-                if(confirmResolve) confirmResolve(true);
-            });
-
-             confirmNoBtn.addEventListener('click', () => {
-                confirmModal.classList.add('hidden');
-                if(confirmResolve) confirmResolve(false);
-            });
+        // --- PAYMENT FUNCTIONALITY ---
+        async function initiatePayment() {
+            logPayment("Initializing secure handshake...");
             
-            const handleClearHistory = async () => {
-                const confirmed = await showConfirm();
-                if(confirmed){
-                    localStorage.removeItem('spiritualGuideChatHistory');
-                    chatHistory = [];
-                    chatContainer.innerHTML = '';
-                    const welcomeMessageWrapper = document.createElement('div');
-                    welcomeMessageWrapper.className = 'ai-response mb-4';
-                    const welcomeMessageElement = document.createElement('div');
-                    welcomeMessageElement.className = 'p-4 rounded-lg bg-black/20 text-gray-300 prose prose-invert max-w-none';
-                    welcomeMessageElement.innerHTML = `<p>Welcome. I am here to listen. Share the burdens of your heart or the puzzles of your mind. What is troubling you today?</p>`;
-                    welcomeMessageWrapper.appendChild(welcomeMessageElement);
-                    chatContainer.appendChild(welcomeMessageWrapper);
-                }
-            };
+            try {
+                let orderData;
 
-            moodButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    moodButtons.forEach(btn => btn.classList.remove('selected'));
-                    button.classList.add('selected');
-                    selectedMood = button.dataset.mood;
+                // CHANGED: Amount is now 200 paise (₹2)
+                const TRANSACTION_AMOUNT_PAISE = 200; 
+
+                if (SIMULATION_MODE) {
+                    // MOCK ORDER
+                    await new Promise(r => setTimeout(r, 800));
+                    orderData = {
+                        id: "order_mock_" + Date.now(),
+                        amount: TRANSACTION_AMOUNT_PAISE,
+                        currency: "INR"
+                    };
+                    logPayment(`Order Created: ${orderData.id}`);
+                } else {
+                    // REAL BACKEND CALL
+                    // Note: Your backend server.js must also be updated to create orders for 200 paise.
+                    const response = await fetch(`${BACKEND_URL}/api/create-order`, { method: 'POST' });
+                    orderData = await response.json();
+                }
+
+                // Razorpay Options
+                const options = {
+                    "key": SIMULATION_MODE ? "rzp_test_mock_key" : "YOUR_RAZORPAY_KEY_ID", 
+                    "amount": orderData.amount, 
+                    "currency": orderData.currency,
+                    "name": "Project Alpha",
+                    "description": "Micro Transaction (₹2)",
+                    "order_id": SIMULATION_MODE ? "" : orderData.id, 
+                    "handler": function (response) {
+                        logPayment("Payment ID: " + response.razorpay_payment_id);
+                        handleSuccess(response);
+                    },
+                    "prefill": {
+                        "name": "Client User",
+                        "email": "client@example.com",
+                        "contact": "9999999999"
+                    },
+                    "theme": {
+                        "color": "#4f46e5" // Indigo-600
+                    }
+                };
+
+                if (SIMULATION_MODE) {
+                    // Mock the Razorpay Modal flow
+                    logPayment("Requesting user authorization...");
+                    const confirmed = confirm(`[Razorpay Sandbox]\n\nMerchant: Project Alpha\nAmount: ₹2.00\n\nConfirm Payment?`);
+                    if (confirmed) {
+                        options.handler({ razorpay_payment_id: "pay_mock_" + Date.now() });
+                    } else {
+                        logPayment("Transaction cancelled by user.");
+                    }
+                } else {
+                    const rzp1 = new Razorpay(options);
+                    rzp1.open();
+                    rzp1.on('payment.failed', function (response){
+                        logPayment("Failed: " + response.error.description);
+                    });
+                }
+
+            } catch (error) {
+                logPayment("Error: " + error.message);
+            }
+        }
+
+        async function handleSuccess(paymentResponse) {
+            logPayment("Verifying signature...");
+
+            if (SIMULATION_MODE) {
+                await new Promise(r => setTimeout(r, 1000));
+                logPayment("Transaction verified.");
+                logPayment("Status: SUCCESS");
+                alert("Payment of ₹2.00 Successful!");
+            } else {
+                await fetch(`${BACKEND_URL}/api/payment-success`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        paymentId: paymentResponse.razorpay_payment_id,
+                        amount: 2 // Storing as 2 rupees in DB
+                    })
                 });
-            });
+                logPayment("Success! Saved to Database.");
+                alert("Payment Successful!");
+            }
+        }
 
-            wisdomButton.addEventListener('click', () => {
-                const randomIndex = Math.floor(Math.random() * wisdomQuotes.length);
-                wisdomText.textContent = wisdomQuotes[randomIndex];
-                wisdomModal.classList.remove('hidden');
-            });
+        // --- INIT ---
+        document.getElementById('connection-status').innerText = SIMULATION_MODE ? "Simulation Mode" : "Connected";
+        document.getElementById('connection-status').className = SIMULATION_MODE 
+            ? "text-xs font-mono bg-amber-100 text-amber-700 px-3 py-1 rounded-full border border-amber-200" 
+            : "text-xs font-mono bg-green-100 text-green-700 px-3 py-1 rounded-full border border-green-200";
 
-            closeWisdomModal.addEventListener('click', () => {
-                wisdomModal.classList.add('hidden');
-            });
-
-            sendButton.addEventListener('click', handleSend);
-            userInput.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' && !event.shiftKey) {
-                    event.preventDefault();
-                    handleSend();
-                }
-            });
-            clearHistoryButton.addEventListener('click', handleClearHistory);
-
-            loadChatHistory();
-        });
     </script>
 </body>
 </html>
-
