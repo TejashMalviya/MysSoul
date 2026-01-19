@@ -1,1 +1,470 @@
-sdfdgwdkew
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Pure Soul's Plea | Anime Sticker Fund</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            background-color: #050011;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Anime Speed Line Overlay (CSS Fallback) */
+        .speed-lines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, 0.8) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1;
+        }
+
+        .section {
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Right align generally */
+            padding-right: 10%;
+            pointer-events: none;
+        }
+
+        .section:nth-child(even) {
+            justify-content: flex-start;
+            padding-left: 10%;
+        }
+
+        /* Cyberpunk Card Style - Modified for 'Heart' Theme */
+        .anime-card {
+            background: rgba(20, 10, 20, 0.9);
+            border: 2px solid #ff0055;
+            box-shadow: 0 0 20px #ff0055, inset 0 0 30px rgba(255, 0, 85, 0.1);
+            padding: 2.5rem;
+            max-width: 550px;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+            transform: skewX(-5deg);
+            position: relative;
+        }
+
+        .anime-card::before {
+            content: 'HEART_RATE_MONITOR';
+            position: absolute;
+            top: 5px; right: 10px;
+            font-size: 0.6rem;
+            color: #ff0055;
+            letter-spacing: 2px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .anime-card h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #ff0055;
+            text-shadow: 2px 2px 0px #fff;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            transform: skewX(5deg); /* Counter skew */
+            text-transform: uppercase;
+        }
+
+        .anime-card p {
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #d1d5db;
+            font-size: 1.1rem;
+            transform: skewX(5deg);
+        }
+
+        .jp-text {
+            position: absolute;
+            opacity: 0.1;
+            font-weight: 900;
+            font-size: 8rem;
+            color: white;
+            z-index: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .hud {
+            position: fixed;
+            top: 30px; left: 30px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff0055;
+            padding: 15px 25px;
+            font-size: 1.2rem;
+            box-shadow: 5px 5px 0px #ff0055;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hud span { color: #00f3ff; font-weight: bold; }
+
+        /* Razorpay Customization */
+        .razorpay-container {
+            margin-top: 25px;
+            transform: skewX(5deg);
+        }
+        
+        /* Custom Button Wrapper to force style */
+        .payment-wrapper form {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HUD -->
+    <div class="hud">
+        HOPE LEVEL: <span id="count">100</span>%
+    </div>
+
+    <!-- Background Japanese Decor -->
+    <div class="jp-text" style="top: 10%; left: -5%;">純粋</div> <!-- Pure -->
+    <div class="jp-text" style="bottom: 10%; right: -5%;">助けて</div> <!-- Help Me -->
+
+    <div class="speed-lines"></div>
+    <div id="canvas-container"></div>
+
+    <main>
+        <section class="section">
+            <div class="anime-card">
+                <h1>I am Very<br>Pure</h1>
+                <p>My heart is made of light. My intentions are innocent.<br>I just want to be happy in this digital world.</p>
+                <p class="text-pink-500 mt-2 text-sm font-bold">WITNESS MY STRUGGLE ⬇</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="anime-card">
+                <h1>The<br>Dream</h1>
+                <p>I see the stickers in my dreams. They call to me.<br>But I am poor. My wallet is empty, but my soul is full.</p>
+                <p class="text-cyan-400 mt-4 text-sm">[ EMOTION: SADNESS DETECTED ]</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="anime-card" style="border-color: #ffe600; box-shadow: 0 0 25px #ffe600;">
+                <h1>Please<br>Help Me</h1>
+                <p>I need money to buy anime stickers. It is my only wish.<br>Donate to a pure soul today.</p>
+                <div class="razorpay-container payment-wrapper">
+                    <form>
+                        <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_S5pNvs5sDt2vJ1" async> </script>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- DATA ---
+        // Animation only for HUD
+        gsap.to("#count", {
+            innerText: 0,
+            duration: 10,
+            snap: { innerText: 1 },
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1
+            }
+        });
+
+        // --- THREE.JS SETUP ---
+        const scene = new THREE.Scene();
+        // Dark purple fog for that synthwave/cyberpunk atmosphere
+        scene.fog = new THREE.FogExp2(0x050011, 0.02);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.toneMapping = THREE.ReinhardToneMapping;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // --- LIGHTING ---
+        const ambientLight = new THREE.AmbientLight(0x404040, 3); // Brighter base
+        scene.add(ambientLight);
+
+        // Neon Pink Light (The "Heart")
+        const pinkLight = new THREE.PointLight(0xff0055, 3, 50);
+        pinkLight.position.set(5, 2, 5);
+        scene.add(pinkLight);
+
+        // Neon Blue Light (The "Tears")
+        const blueLight = new THREE.PointLight(0x00f3ff, 2, 50);
+        blueLight.position.set(-5, -2, 10);
+        scene.add(blueLight);
+
+        // --- ASSETS: PROCEDURAL ANIME CARDS ---
+        function createAnimeCardTexture(label, subtext, color) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 728; // Card Ratio
+            const ctx = canvas.getContext('2d');
+
+            // Card Base
+            const grad = ctx.createLinearGradient(0, 0, 512, 728);
+            grad.addColorStop(0, '#1a1a2e');
+            grad.addColorStop(1, '#16213e');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 512, 728);
+
+            // Border
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 20;
+            ctx.strokeRect(20, 20, 472, 688);
+
+            // "Image" Placeholder Area
+            ctx.fillStyle = '#0f3460';
+            ctx.fillRect(60, 60, 392, 350);
+            
+            // Draw a simple "Face" (Kaomoji)
+            ctx.fillStyle = color;
+            ctx.font = '100px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('( T_T )', 256, 250); // Sad face
+
+            // Text
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 60px Arial';
+            ctx.fillText(label, 256, 500);
+            
+            ctx.font = 'italic 40px Arial';
+            ctx.fillStyle = color;
+            ctx.fillText(subtext, 256, 580);
+
+            // Rarity Stars
+            ctx.fillStyle = '#ffe600';
+            ctx.font = '60px Arial';
+            ctx.fillText('★★★★★', 256, 660);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        const cards = [];
+        const cardGroup = new THREE.Group();
+        // Updated data to be more emotional
+        const cardData = [
+            { name: "PURITY", sub: "100%", color: "#ffffff" },
+            { name: "HOPE", sub: "Fragile", color: "#00f3ff" },
+            { name: "DREAMS", sub: "Unfulfilled", color: "#ffe600" },
+            { name: "POVERTY", sub: "Critical", color: "#ff0055" },
+            { name: "LOVE", sub: "Stickers", color: "#ff99c8" },
+        ];
+
+        const cardGeo = new THREE.PlaneGeometry(2, 3);
+
+        cardData.forEach((data, i) => {
+            const tex = createAnimeCardTexture(data.name, data.sub, data.color);
+            const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide });
+            const mesh = new THREE.Mesh(cardGeo, mat);
+            
+            // Random positions in a "Tunnel" formation
+            const angle = (i / cardData.length) * Math.PI * 2;
+            const radius = 6;
+            mesh.position.set(
+                Math.cos(angle) * radius, 
+                Math.sin(angle) * radius, 
+                -10 - (i * 10) // Spread deep into Z
+            );
+            
+            mesh.rotation.z = angle - Math.PI/2; // Orient towards center
+            mesh.rotation.y = -Math.PI / 2; // Face the player path
+            
+            mesh.userData = { isCard: true };
+            cardGroup.add(mesh);
+            cards.push(mesh);
+        });
+        scene.add(cardGroup);
+
+        // --- AVATAR: "CHIBI ROBO" (The Pure Soul) ---
+        const avatarGroup = new THREE.Group();
+
+        // Head (Neon Sphere)
+        const headGeo = new THREE.SphereGeometry(0.4, 32, 32);
+        const headMat = new THREE.MeshStandardMaterial({ 
+            color: 0xffffff, // White for Purity
+            roughness: 0.1, 
+            metalness: 0.8,
+            emissive: 0x222222
+        });
+        const head = new THREE.Mesh(headGeo, headMat);
+        head.position.y = 0.6;
+        avatarGroup.add(head);
+
+        // Visor (Glowing Eye)
+        const visorGeo = new THREE.BoxGeometry(0.5, 0.15, 0.3);
+        const visorMat = new THREE.MeshBasicMaterial({ color: 0xff0055 }); // Pink eyes for emotion
+        const visor = new THREE.Mesh(visorGeo, visorMat);
+        visor.position.set(0, 0.6, 0.25);
+        avatarGroup.add(visor);
+
+        // Body
+        const bodyGeo = new THREE.CylinderGeometry(0.3, 0.2, 0.6, 8);
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.position.y = 0;
+        avatarGroup.add(body);
+
+        // Wings (Jetpack)
+        const wingGeo = new THREE.ConeGeometry(0.1, 0.8, 4);
+        const wingMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        const wingL = new THREE.Mesh(wingGeo, wingMat);
+        wingL.position.set(-0.3, 0.2, -0.2);
+        wingL.rotation.z = 0.5;
+        const wingR = wingL.clone();
+        wingR.position.set(0.3, 0.2, -0.2);
+        wingR.rotation.z = -0.5;
+        avatarGroup.add(wingL);
+        avatarGroup.add(wingR);
+
+        avatarGroup.position.set(0, -1, 3);
+        scene.add(avatarGroup);
+
+
+        // --- SPEED LINES (Anime Effect) ---
+        const lineGeo = new THREE.BufferGeometry();
+        const lineCount = 400;
+        const linePos = [];
+        for(let i=0; i<lineCount; i++) {
+            const x = (Math.random() - 0.5) * 50;
+            const y = (Math.random() - 0.5) * 50;
+            const z = (Math.random() - 0.5) * 100 - 50;
+            linePos.push(x, y, z);
+        }
+        lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3));
+        const lineMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1, transparent: true, opacity: 0.5 });
+        const speedLines = new THREE.Points(lineGeo, lineMat);
+        scene.add(speedLines);
+
+
+        // --- ANIMATION SYSTEM ---
+        
+        camera.position.z = 8;
+        camera.position.y = 0;
+
+        // GSAP Scroll Parallax
+        gsap.registerPlugin(ScrollTrigger);
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "main",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1
+            }
+        });
+
+        // 1. Move Avatar forward through the tunnel
+        tl.to(avatarGroup.position, { z: -40, duration: 10, ease: "none" });
+        // 2. Camera follows
+        tl.to(camera.position, { z: -35, duration: 10, ease: "none" }, "<");
+        
+        // 3. Avatar does a barrel roll mid-way
+        tl.to(avatarGroup.rotation, { z: Math.PI * 2, duration: 2, ease: "power2.inOut" }, 4);
+
+        // 4. Cards float by (handled by camera movement, but we add spin)
+        cards.forEach((c, i) => {
+            tl.to(c.rotation, { y: Math.PI, duration: 2 }, i * 0.5);
+        });
+
+
+        // --- INTERACTION ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('click', (e) => {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(cardGroup.children);
+
+            if(intersects.length > 0) {
+                const card = intersects[0].object;
+                
+                // Collect Animation
+                gsap.to(card.scale, { x: 0, y: 0, duration: 0.3, ease: "back.in(2)" });
+                gsap.to(card.rotation, { z: 10, duration: 0.3 });
+
+                // Particle Burst (Simulated by flashing screen)
+                const flash = document.createElement('div');
+                flash.style.position = 'fixed';
+                flash.style.top = 0; flash.style.left = 0;
+                flash.style.width = '100%'; flash.style.height = '100%';
+                flash.style.background = 'white';
+                flash.style.opacity = 0.5;
+                flash.style.pointerEvents = 'none';
+                document.body.appendChild(flash);
+                gsap.to(flash, { opacity: 0, duration: 0.2, onComplete: () => flash.remove() });
+            }
+        });
+
+
+        // --- RENDER LOOP ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+            const delta = clock.getDelta();
+
+            // Avatar Idle Hover
+            avatarGroup.position.y += Math.sin(time * 3) * 0.005;
+            
+            // Speed Lines Motion (Infinite Scroll effect)
+            const positions = speedLines.geometry.attributes.position.array;
+            for(let i=2; i<positions.length; i+=3) {
+                positions[i] += 0.5; // Move towards camera
+                if(positions[i] > 10) {
+                    positions[i] = -100; // Reset to back
+                }
+            }
+            speedLines.geometry.attributes.position.needsUpdate = true;
+
+            // Cards Idle Spin
+            cards.forEach((card, i) => {
+                card.rotation.z = Math.sin(time + i) * 0.1; // Gentle sway
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
+</html>
